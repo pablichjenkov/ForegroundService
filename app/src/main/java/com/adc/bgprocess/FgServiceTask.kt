@@ -1,65 +1,87 @@
-package com.ncl.bgservice
+package com.adc.bgprocess
 
 import android.app.*
 import android.content.Intent
-import android.os.Binder
-import android.os.IBinder
 import android.util.Log
 import android.widget.Toast
 import android.support.v4.app.NotificationCompat
 import android.content.Context
-import android.os.Build
+import android.os.*
 
 
-class FgService : Service() {
+class FgServiceTask : Service() {
 
     private val CHANNEL_ID = "my_channel_01"
+
     private val NOTIFICATION_ID = 1
-    private val TAG = "FgService"
+
     private val localBinder = LocalBinder()
 
 
     override fun onCreate() {
         super.onCreate()
-        Log.d(TAG, "FgService.onCreate()")
+
+        Log.d(BgApplication.TAG, "========== FgService::onCreate() ==========")
+
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        Log.d(TAG, "FgService.onStartCommand()")
+
+        Log.d(BgApplication.TAG, "========== FgService::onStartCommand() ==========")
+
         postForegroundServiceNotification()
+
         return START_STICKY
     }
 
     override fun onBind(intent: Intent?): IBinder {
-        Log.d(TAG, "FgService.onBind()")
+
+        Log.d(BgApplication.TAG, "========== FgService::onBind() ==========")
+
         return localBinder
     }
 
     override fun onUnbind(intent: Intent?): Boolean {
-        Log.d(TAG, "FgService.onUnbind()")
+
+        Log.d(BgApplication.TAG, "========== FgService::onUnbind() ==========")
+
         return super.onUnbind(intent)
     }
 
     override fun onRebind(intent: Intent?) {
-        super.onRebind(intent)
-        Log.d(TAG, "FgService.onRebind()")
+
+        Log.d(BgApplication.TAG, "========== FgService::onRebind() ==========")
+
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.d(TAG, "FgService.onDestroy()")
+
+        Log.d(BgApplication.TAG, "========== FgService::onDestroy() ==========")
+
     }
 
     override fun onTaskRemoved(rootIntent: Intent?) {
-        super.onTaskRemoved(rootIntent)
-        Log.d(TAG, "FgService.onTaskRemoved()")
-        Toast.makeText(applicationContext, "FgService.onTaskRemoved()", Toast.LENGTH_SHORT).show()
+
+        Log.d(BgApplication.TAG, "========== FgService::onTaskRemoved() ==========")
+
+        Toast.makeText(
+                applicationContext,
+                "FgService.onTaskRemoved()",
+                Toast.LENGTH_SHORT
+        ).show()
+
     }
 
+    override fun onLowMemory() {
+
+        Log.d(BgApplication.TAG, "========== FgService::onLowMemory() ==========")
+
+    }
 
     inner class LocalBinder : Binder() {
-        internal val service: FgService
-            get() = this@FgService
+        internal val serviceTask: FgServiceTask
+            get() = this@FgServiceTask
     }
 
     private fun postForegroundServiceNotification() {
@@ -67,7 +89,7 @@ class FgService : Service() {
 
             val channel = NotificationChannel(CHANNEL_ID,
                     "Channel human readable title",
-                    NotificationManager.IMPORTANCE_DEFAULT)
+                    NotificationManager.IMPORTANCE_LOW)
 
             val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
@@ -75,10 +97,8 @@ class FgService : Service() {
             val notification = NotificationCompat.Builder(this, CHANNEL_ID)
                     .setSmallIcon(R.drawable.icon_ship_white)
                     .setStyle(NotificationCompat.BigTextStyle()
-                            .setBigContentTitle("Norwegian Service")
-                            .bigText("This service handles the calls and messages while on " +
-                                " Norwegian Cruise Ship. If turned off the Communication Package on" +
-                                "the App won't work properly"))
+                            .setBigContentTitle("Foreground Service")
+                            .bigText("Service running non interruptable in the background"))
                     .build()
 
             startForeground(NOTIFICATION_ID, notification)
