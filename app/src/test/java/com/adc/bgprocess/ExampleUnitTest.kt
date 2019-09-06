@@ -1,7 +1,6 @@
-package com.ncl.bgservice
+package com.adc.bgprocess
 
 import org.junit.Test
-
 import org.junit.Assert.*
 
 /**

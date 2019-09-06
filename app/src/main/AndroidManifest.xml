@@ -3,6 +3,7 @@
     package="com.adc.bgprocess">
 
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     
     <application
         android:name=".BgApplication"
@@ -23,11 +24,11 @@
 
         </activity>
 
-        <service android:name=".BgServiceTask"
+        <service android:name=".BgService"
             android:enabled="true"
             android:exported="false"/>
 
-        <service android:name=".FgServiceTask"
+        <service android:name=".FgService"
             android:enabled="true"
             android:exported="false"/>
 

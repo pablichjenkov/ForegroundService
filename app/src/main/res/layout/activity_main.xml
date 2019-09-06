@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,14 +8,34 @@
     tools:context=".MainActivity">
 
     <Button
-        android:id="@+id/startBgServiceBtn"
+        android:id="@+id/startUiLoopBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         android:layout_marginTop="40dp"
-        android:text="Start Background Service"/>
+        android:text="Test UI Periodic Task"/>
+
+    <Button
+        android:id="@+id/startBgLoopBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/startUiLoopBtn"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginTop="32dp"
+        android:text="Test ThreadPool Periodic Task"/>
+
+    <Button
+        android:id="@+id/startBgServiceBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/startBgLoopBtn"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginTop="32dp"
+        android:text="Test Background Service"/>
 
     <Button
         android:id="@+id/startFgServiceBtn"
@@ -23,8 +44,8 @@
         app:layout_constraintTop_toBottomOf="@+id/startBgServiceBtn"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginTop="40dp"
-        android:text="Start Foreground Service"/>
+        android:layout_marginTop="32dp"
+        android:text="Test Foreground Service"/>
 
     <Button
         android:id="@+id/startAlarmTaskBtn"
@@ -33,7 +54,7 @@
         app:layout_constraintTop_toBottomOf="@+id/startFgServiceBtn"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginTop="40dp"
-        android:text="Start Alarm Task"/>
+        android:layout_marginTop="32dp"
+        android:text="Test Alarm Task"/>
 
-</android.support.constraint.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

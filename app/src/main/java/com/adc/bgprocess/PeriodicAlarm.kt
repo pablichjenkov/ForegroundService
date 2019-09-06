@@ -1,4 +1,7 @@
 package com.adc.bgprocess
 
-class AlarmTask {
+class PeriodicAlarm {
+
+
+
 }

@@ -1,11 +1,13 @@
 package com.adc.bgprocess
 
-import android.os.Handler
-import android.util.Log
 import java.util.concurrent.atomic.AtomicBoolean
 
 
-class PeriodicWorker(private val handler: Handler, private val delayInMillis: Long) {
+class PeriodicRunnable(
+        private val delayExecutor: DelayExecutor,
+        private val block: () -> Unit,
+        private val delayInMillis: Long
+) {
 
     // private var runnable: Runnable? = null
 
@@ -24,9 +26,11 @@ class PeriodicWorker(private val handler: Handler, private val delayInMillis: Lo
 
             override fun run() {
 
-                Log.d(BgApplication.TAG, "PeriodicWorker::run() executing")
+                Logger.log("PeriodicRunnable::run() on ${Thread.currentThread().name}")
 
-                handler.postDelayed(this, delayInMillis)
+                block.invoke()
+
+                delayExecutor.postDelayed(this, delayInMillis)
 
             }
 
@@ -34,25 +38,24 @@ class PeriodicWorker(private val handler: Handler, private val delayInMillis: Lo
 
         /*runnable = {
 
-            Log.d(BgApplication.TAG, "PeriodicWorker::run() executing")
+            Log.d(BgApplication.TAG, "PeriodicRunnable::run() executing")
 
             runnable?.let {
-                handler.postDelayed(it, delayInMillis)
+                delayExecutor.postDelayed(it, delayInMillis)
             }
 
 
         }*/
 
-        // Start the initial runnable task by posting through the handler
-        handler.post(runnable)
+        delayExecutor.postNow(runnable)
 
     }
 
     fun stop() {
 
-        //handler.removeCallbacks(runnable)
+        delayExecutor.shutdown()
 
-        //runnable = null
+        // runnable = null
 
     }
 
