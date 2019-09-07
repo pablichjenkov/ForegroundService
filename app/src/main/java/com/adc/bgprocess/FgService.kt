@@ -106,7 +106,7 @@ class FgService : Service() {
 
                 fgServiceNotificationChannel = NotificationChannel(
                         CHANNEL_ID_FG_SERVICE,
-                        "Channel to post Foreground sticky notifications",
+                        "Foreground Sticky notifications",
                         NotificationManager.IMPORTANCE_LOW
                 )
 
@@ -117,10 +117,11 @@ class FgService : Service() {
         }
 
         val notification = NotificationCompat.Builder(this, CHANNEL_ID_FG_SERVICE)
-                .setSmallIcon(R.drawable.icon_ship_white)
+                .setSmallIcon(android.R.drawable.ic_popup_reminder)
                 .setStyle(NotificationCompat.BigTextStyle()
                         .setBigContentTitle("Foreground Service")
                         .bigText("Service running non interruptable in the background"))
+                .setOngoing(true)
                 .build()
 
         startForeground(NOTIFICATION_ID, notification)

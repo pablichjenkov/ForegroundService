@@ -10,24 +10,30 @@ import android.os.Bundle
 import android.os.SystemClock
 import android.view.View
 import android.widget.Toast
+import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 import java.text.SimpleDateFormat
-import java.time.format.DateTimeFormatter
 import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
 
-
     private val NOTIFICATION_POST_INTERVAL_MILLIS = 5*1000 // 5 seconds
 
-    private val NOTIFICATION_ID = 12345
+    private val NOTIFICATION_ID_UI_EXECUTOR = 12345
 
-    private val CHANNEL_ID_TEST_NOTIFICATION_BG = "testNotificationBgChannelId"
+    private val NOTIFICATION_ID_BG_EXECUTOR = 12346
 
-    private var lastNotificationPostTimestamp = 0L
+    private var lastUINotificationPostTimestamp = 0L
 
+    private var lastBGNotificationPostTimestamp = 0L
+
+    companion object {
+
+        val CHANNEL_ID_TEST_NOTIFICATION = "testNotificationChannelId"
+
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,7 +46,7 @@ class MainActivity : AppCompatActivity() {
 
             BgApplication.instance.startUiWorker {
 
-                checkForPostNotification()
+                checkForPostUINotification()
 
             }
 
@@ -50,7 +56,7 @@ class MainActivity : AppCompatActivity() {
 
             BgApplication.instance.startBgWorker {
 
-                checkForPostNotification()
+                checkForPostBGNotification()
 
             }
 
@@ -90,7 +96,8 @@ class MainActivity : AppCompatActivity() {
 
         findViewById<View>(R.id.startAlarmTaskBtn).setOnClickListener {
 
-            // TODO: Implement periodic alarm forever to see restrictions
+            BgApplication.instance.startAlarm()
+
         }
 
     }
@@ -117,40 +124,64 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun checkForPostNotification() {
+    private fun checkForPostUINotification() {
 
         val now = SystemClock.uptimeMillis()
 
-        val elapsedTimeMillis = now - lastNotificationPostTimestamp
+        val elapsedTimeMillis = now - lastUINotificationPostTimestamp
 
         if (elapsedTimeMillis >= NOTIFICATION_POST_INTERVAL_MILLIS) {
 
-            lastNotificationPostTimestamp = now
+            lastUINotificationPostTimestamp = now
 
-            BgApplication.instance.postNotification(NOTIFICATION_ID, newNotification())
+            BgApplication.instance.postNotification(
+                    NOTIFICATION_ID_UI_EXECUTOR,
+                    newNotification(android.R.drawable.ic_dialog_info, "UI Executor")
+            )
 
         }
 
     }
 
-    fun newNotification(): Notification {
+    private fun checkForPostBGNotification() {
+
+        val now = SystemClock.uptimeMillis()
+
+        val elapsedTimeMillis = now - lastBGNotificationPostTimestamp
+
+        if (elapsedTimeMillis >= NOTIFICATION_POST_INTERVAL_MILLIS) {
+
+            lastBGNotificationPostTimestamp = now
+
+            BgApplication.instance.postNotification(
+                    NOTIFICATION_ID_BG_EXECUTOR,
+                    newNotification(android.R.drawable.star_on, "ThreadPool Executor")
+            )
+
+        }
+
+    }
+
+    fun newNotification(@DrawableRes iconResId: Int, title: String): Notification {
 
         // Version 26 and Up requires a channel to post a notification
         if (Build.VERSION.SDK_INT >= 26) {
 
             val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-            var fgServiceNotificationChannel = notificationManager.getNotificationChannel(CHANNEL_ID_TEST_NOTIFICATION_BG)
+            var notificationChannel = notificationManager.getNotificationChannel(CHANNEL_ID_TEST_NOTIFICATION)
 
-            if (fgServiceNotificationChannel == null) {
+            if (notificationChannel == null) {
 
-                fgServiceNotificationChannel = NotificationChannel(
-                        CHANNEL_ID_TEST_NOTIFICATION_BG,
+                notificationChannel = NotificationChannel(
+                        CHANNEL_ID_TEST_NOTIFICATION,
                         "Channel to post regular notifications to test the BG mode",
                         NotificationManager.IMPORTANCE_DEFAULT
                 )
 
-                notificationManager.createNotificationChannel(fgServiceNotificationChannel)
+                notificationChannel.setSound(null, null)
+
+                notificationManager.createNotificationChannel(notificationChannel)
 
             }
 
@@ -164,10 +195,10 @@ class MainActivity : AppCompatActivity() {
 
         val notificationText = """Notification post at:$date  """
 
-        return NotificationCompat.Builder(this, CHANNEL_ID_TEST_NOTIFICATION_BG)
-                .setSmallIcon(R.drawable.icon_ship_white)
+        return NotificationCompat.Builder(this, CHANNEL_ID_TEST_NOTIFICATION)
+                .setSmallIcon(iconResId)
                 .setStyle(NotificationCompat.BigTextStyle()
-                        .setBigContentTitle("ADC BG Test Notification")
+                        .setBigContentTitle(title)
                         .bigText(notificationText))
                 .build()
 

@@ -32,6 +32,16 @@
             android:enabled="true"
             android:exported="false"/>
 
+        <receiver android:name=".AlarmReceiver"
+            android:enabled="true"
+            android:exported="false">
+
+            <intent-filter>
+                <action android:name="com.adc.bgprocess.periodicAlarmIntentAction"/>
+            </intent-filter>
+
+        </receiver>
+
     </application>
 
 </manifest>

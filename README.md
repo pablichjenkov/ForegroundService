@@ -18,6 +18,8 @@ This project basically explore the new Foreground Services API and the WorkManag
 Open the app and stare at the logcat, the app will print all the events pertaining to each services, background and foreground ones.
 
 
-Inspiration:
+Acknowledgments:
 
 [Effect of swiping an Android app from the Task Manager](http://workshop.alea.net/post/2016/06/android-service-kill/)
+
+[BBQTimer App](https://github.com/1fish2/BBQTimer)

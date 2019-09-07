@@ -20,6 +20,8 @@ class BgApplication : Application() {
 
     private var bgPeriodicRunnable: PeriodicRunnable? = null
 
+    private val isPeriodicAlarmStarted = AtomicBoolean(false)
+
 
     override fun onCreate() {
         super.onCreate()
@@ -93,6 +95,22 @@ class BgApplication : Application() {
      * far our periodic execution can get.
      */
     fun stopBgWorker() { bgPeriodicRunnable?.stop() }
+
+    fun startAlarm() {
+
+        if (isPeriodicAlarmStarted.getAndSet(true)) {
+            return
+        }
+
+        PeriodicAlarm.instance().startAlarm(this, PeriodicAlarm.NOTIFICATION_POST_INTERVAL_MILLIS)
+
+    }
+
+    fun stopAlarm() {
+
+        PeriodicAlarm.instance().stop(this)
+
+    }
 
     fun postNotification(notificationId: Int, notification: Notification) {
 
