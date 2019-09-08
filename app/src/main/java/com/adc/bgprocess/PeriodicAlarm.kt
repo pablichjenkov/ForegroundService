@@ -12,7 +12,7 @@ class PeriodicAlarm {
 
     private var pendingIntent: PendingIntent? = null
 
-    fun startAlarm(context: Context, millis: Int) {
+    fun startAlarm(context: Context, millis: Long) {
 
         Logger.log("========== PeriodicAlarm::startAlarm() ==========")
 
@@ -74,7 +74,7 @@ class PeriodicAlarm {
 
         val NOTIFICATION_ID_ALARM_BROADCASTER = 12347
 
-        val NOTIFICATION_POST_INTERVAL_MILLIS = 5*1000 // 5 seconds
+        val NOTIFICATION_POST_INTERVAL_MILLIS = 60*1000L // 1 minute
 
         private val REQUEST_CODE = 12348
 

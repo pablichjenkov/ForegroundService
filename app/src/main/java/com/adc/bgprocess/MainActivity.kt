@@ -19,7 +19,7 @@ import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
-    private val NOTIFICATION_POST_INTERVAL_MILLIS = 5*1000 // 5 seconds
+    private val NOTIFICATION_POST_INTERVAL_MILLIS = 60*1000 // 1 minute
 
     private val NOTIFICATION_ID_UI_EXECUTOR = 12345
 
@@ -31,7 +31,7 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
 
-        val CHANNEL_ID_TEST_NOTIFICATION = "testNotificationChannelId"
+        const val CHANNEL_ID_TEST_NOTIFICATION = "testNotificationChannelId"
 
     }
 
@@ -195,11 +195,13 @@ class MainActivity : AppCompatActivity() {
 
         val notificationText = """Notification post at:$date  """
 
+        val deviceData = BgApplication.instance.getNotificationData()
+
         return NotificationCompat.Builder(this, CHANNEL_ID_TEST_NOTIFICATION)
                 .setSmallIcon(iconResId)
                 .setStyle(NotificationCompat.BigTextStyle()
                         .setBigContentTitle(title)
-                        .bigText(notificationText))
+                        .bigText(notificationText + "\n" + deviceData))
                 .build()
 
     }

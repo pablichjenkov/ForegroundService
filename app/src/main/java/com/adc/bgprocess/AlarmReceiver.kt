@@ -78,11 +78,13 @@ class AlarmReceiver : BroadcastReceiver() {
 
         val notificationText = """Notification post at:$date  """
 
+        val deviceData = BgApplication.instance.getNotificationData()
+
         return NotificationCompat.Builder(broadcasterContext, MainActivity.CHANNEL_ID_TEST_NOTIFICATION)
                 .setSmallIcon(iconResId)
                 .setStyle(NotificationCompat.BigTextStyle()
                         .setBigContentTitle(title)
-                        .bigText(notificationText))
+                        .bigText(notificationText + "\n" + deviceData))
                 .setDefaults(NotificationCompat.DEFAULT_SOUND)
                 .build()
 
