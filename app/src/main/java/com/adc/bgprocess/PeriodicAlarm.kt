@@ -10,7 +10,7 @@ import android.os.SystemClock
 
 class PeriodicAlarm {
 
-    private var pendingIntent: PendingIntent? = null
+    private var postedPendingIntent: PendingIntent? = null
 
     fun startAlarm(context: Context, millis: Long) {
 
@@ -22,7 +22,7 @@ class PeriodicAlarm {
                     action = PERIODIC_ALARM_INTENT_ACTION
                 }
 
-        val pendingIntent
+        val newPendingIntent
                 = PendingIntent
                 .getBroadcast(
                         context,
@@ -33,31 +33,34 @@ class PeriodicAlarm {
 
         val manager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
-        manager.cancel(pendingIntent)
+        // Cancel the previous posted intent
+        postedPendingIntent?.let { manager.cancel(it) }
 
         val alarmType = AlarmManager.ELAPSED_REALTIME_WAKEUP// AlarmManager.ELAPSED_REALTIME
 
-        val alarmPeriodicTimeMillis = SystemClock.uptimeMillis() + millis
+        val alarmPeriodicTimeMillis = SystemClock.elapsedRealtime() + millis
 
         if (Build.VERSION.SDK_INT >= 23) {
 
-            manager.setExactAndAllowWhileIdle(alarmType, alarmPeriodicTimeMillis, pendingIntent)
+            manager.setExactAndAllowWhileIdle(alarmType, alarmPeriodicTimeMillis, newPendingIntent)
 
         } else if (Build.VERSION.SDK_INT >= 19) {
 
-            manager.setExact(alarmType, alarmPeriodicTimeMillis, pendingIntent)
+            manager.setExact(alarmType, alarmPeriodicTimeMillis, newPendingIntent)
 
         } else {
 
-            manager.set(alarmType, alarmPeriodicTimeMillis, pendingIntent)
+            manager.set(alarmType, alarmPeriodicTimeMillis, newPendingIntent)
 
         }
+
+        postedPendingIntent = newPendingIntent
 
     }
 
     fun stop(context: Context) {
 
-        pendingIntent?.let {
+        postedPendingIntent?.let {
 
             val manager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
@@ -78,15 +81,23 @@ class PeriodicAlarm {
 
         private val REQUEST_CODE = 12348
 
-        private val periodicAlarm: PeriodicAlarm? = null
+        private var periodicAlarm: PeriodicAlarm? = null
 
         fun instance(): PeriodicAlarm {
 
-            return when(periodicAlarm) {
+            return when(val localPeriodicAlarm = periodicAlarm) {
 
-                null -> PeriodicAlarm()
+                null -> {
 
-                else -> periodicAlarm
+                    PeriodicAlarm().also {
+
+                     periodicAlarm = it
+
+                    }
+
+                }
+
+                else -> localPeriodicAlarm
 
             }
 

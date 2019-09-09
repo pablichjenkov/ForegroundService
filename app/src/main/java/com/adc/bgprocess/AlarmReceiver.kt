@@ -41,7 +41,8 @@ class AlarmReceiver : BroadcastReceiver() {
     fun newNotification(
             broadcasterContext: Context,
             @DrawableRes iconResId: Int,
-            title: String): Notification {
+            title: String
+    ): Notification {
 
         // Version 26 and Up requires a channel to post a notification
         if (Build.VERSION.SDK_INT >= 26) {
