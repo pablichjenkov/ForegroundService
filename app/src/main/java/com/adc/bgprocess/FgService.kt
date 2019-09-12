@@ -42,9 +42,13 @@ class FgService : Service() {
 
         Logger.log("========== FgService::onStartCommand() ==========")
 
-        startCmdCount ++
+        // Only post the sticky notification the first time the service is started. If you want to
+        // update the Notification content then do it through the NotificationCenter.
+        if (startCmdCount == 0) {
+            postForegroundServiceNotification()
+        }
 
-        postForegroundServiceNotification()
+        startCmdCount ++
 
         return START_STICKY
     }
