@@ -6,21 +6,33 @@ import android.widget.Toast
 import android.content.Context
 import android.os.*
 import androidx.core.app.NotificationCompat
+import android.app.PendingIntent
+import android.content.IntentFilter
 
 
 class FgService : Service() {
-
-    private val CHANNEL_ID_FG_SERVICE = "fgServiceChannelId"
-
-    private val NOTIFICATION_ID = 1
 
     private val localBinder = LocalBinder()
 
     private var startCmdCount = 0
 
+    companion object {
+
+        private val CHANNEL_ID_FG_SERVICE = "fgServiceChannelId"
+
+        private val NOTIFICATION_ID = 1
+
+        private val REQ_CODE_PENDING_INTENT = 1000
+
+        val FOREGROUND_SERVICE_INTENT_ACTION = "com.adc.bgprocess.foreground.service.IntentAction"
+
+    }
+
 
     override fun onCreate() {
         super.onCreate()
+
+        registerReceiver(FgReceiver(), IntentFilter(FOREGROUND_SERVICE_INTENT_ACTION))
 
         Logger.log("========== FgService::onCreate() ==========")
 
@@ -66,7 +78,7 @@ class FgService : Service() {
 
         val secDiff = milliSecDiff / 60*60*1000
 
-        Logger.log("========== BgService::onDestroy() [BG_UPTIME=$secDiff hours; START_CMD_COUNT=$startCmdCount] ==========")
+        Logger.log("========== FgService::onDestroy() [BG_UPTIME=$secDiff hours; START_CMD_COUNT=$startCmdCount] ==========")
 
     }
 
@@ -122,9 +134,23 @@ class FgService : Service() {
                         .setBigContentTitle("Foreground Service")
                         .bigText("Service running non interruptable in the background"))
                 .setOngoing(true)
+                .setContentIntent(buildNotificationIntent())
                 .build()
 
         startForeground(NOTIFICATION_ID, notification)
+
+    }
+
+    private fun buildNotificationIntent(): PendingIntent {
+
+        val fgServiceIntent = Intent(FOREGROUND_SERVICE_INTENT_ACTION)
+
+        return PendingIntent
+                .getBroadcast(
+                        this,
+                        REQ_CODE_PENDING_INTENT,
+                        fgServiceIntent,
+                        0)
 
     }
 

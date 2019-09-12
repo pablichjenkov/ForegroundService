@@ -11,7 +11,9 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 
 
-class BgApplication : Application() {
+class BgApplication : Application(), AppLifecycleListener {
+
+    lateinit var appLifecycleMonitor: AppLifecycleMonitor
 
     var mainActivityLastStopTimestamp: Long = 0
 
@@ -31,6 +33,10 @@ class BgApplication : Application() {
 
         instance = this
 
+        appLifecycleMonitor =
+                AppLifecycleMonitor.Builder()
+                .build(this, this)
+
         Logger.log("BgApplication::onCreate()")
 
     }
@@ -47,6 +53,19 @@ class BgApplication : Application() {
 
         Logger.log("BgApplication::onTerminate()")
 
+    }
+
+    override fun onAppOpened() {
+
+    }
+
+    override fun onAppGotoForeground() {
+    }
+
+    override fun onAppGotoBackground() {
+    }
+
+    override fun onAppClosed() {
     }
 
     /**
